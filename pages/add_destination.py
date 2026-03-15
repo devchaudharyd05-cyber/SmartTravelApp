@@ -11,25 +11,30 @@ likes_beach = st.selectbox(
     format_func=lambda x: "Yes" if x==1 else "No"
 )
 
-budget = st.number_input("Budget")
+budget = st.number_input("Budget", min_value=1000)
 
-price = st.number_input("Price")
+price = st.number_input("Price", min_value=1000)
 
 rating = st.slider("Rating",1.0,5.0)
 
 if st.button("Add Destination"):
 
-    if place == "":
+    if place.strip() == "":
         st.warning("Please enter destination name")
 
     else:
 
-        new_data = pd.DataFrame(
-            [[place,likes_beach,budget,price,rating]],
-            columns=["destination","likes_beach","budget","price","rating"]
-        )
+        new_row = {
+            "destination": place,
+            "likes_beach": likes_beach,
+            "budget": budget,
+            "price": price,
+            "rating": rating
+        }
 
-        new_data.to_csv(
+        df = pd.DataFrame([new_row])
+
+        df.to_csv(
             "data/destinations.csv",
             mode="a",
             header=False,
