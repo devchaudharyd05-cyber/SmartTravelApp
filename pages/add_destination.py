@@ -1,58 +1,48 @@
 import streamlit as st
 import pandas as pd
 
-st.title("➕ Add Destination")
+st.title("Add New Destination")
 
-# Input fields
-place = st.text_input("Destination Name")
+destination = st.text_input("Destination Name")
 
-likes_beach = st.selectbox(
-    "Is it a beach destination?",
-    [1, 0],
-    format_func=lambda x: "Yes" if x == 1 else "No"
+type = st.selectbox(
+    "Destination Type",
+    ["Beach","Mountain","City","Hill Station"]
 )
 
-budget = st.number_input("Recommended Budget", min_value=1000)
+likes_beach = st.selectbox("Beach Preference",[1,0])
 
-price = st.number_input("Estimated Travel Price", min_value=1000)
+budget = st.number_input("Recommended Budget")
 
-rating = st.slider("Rating", 1.0, 5.0)
+travel_price = st.number_input("Travel Price")
 
-# Add button
+rating = st.slider("Rating",1.0,5.0,4.0)
+
+weather = st.text_input("Weather Type")
+
+temperature = st.number_input("Average Temperature")
+
+best_time = st.text_input("Best Time To Visit")
+
+
 if st.button("Add Destination"):
 
-    if place.strip() == "":
-        st.warning("Please enter a destination name")
+    new_data = pd.DataFrame([{
+        "destination":destination,
+        "type":type,
+        "likes_beach":likes_beach,
+        "budget":budget,
+        "travel_price":travel_price,
+        "rating":rating,
+        "weather":weather,
+        "temperature":temperature,
+        "best_time":best_time
+    }])
 
-    else:
+    data = pd.read_csv("data/destinations.csv")
 
-        # Create new row
-        new_row = pd.DataFrame([{
-            "destination": place,
-            "likes_beach": likes_beach,
-            "budget": budget,
-            "price": price,
-            "rating": rating
-        }])
+    data = pd.concat([data,new_data],ignore_index=True)
 
-        # Load existing dataset
-        try:
-            data = pd.read_csv("data/destinations.csv")
-        except:
-            data = pd.DataFrame(columns=[
-                "destination",
-                "likes_beach",
-                "budget",
-                "price",
-                "rating"
-            ])
+    data.to_csv("data/destinations.csv",index=False)
 
-        # Append new row
-        data = pd.concat([data, new_row], ignore_index=True)
-
-        # Save file safely
-        data.to_csv("data/destinations.csv", index=False)
-
-        st.success("Destination added successfully!")
-
-        st.rerun()
+    st.success("Destination Added Successfully")

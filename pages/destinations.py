@@ -1,22 +1,28 @@
 import streamlit as st
 import pandas as pd
 
-st.title("📍 Available Destinations")
+st.title("Explore Destinations")
 
-try:
+data = pd.read_csv("data/destinations.csv")
 
-    data = pd.read_csv("data/destinations.csv", on_bad_lines="skip")
+# Search
+search = st.text_input("Search destination")
 
-    if data.empty:
-        st.warning("No destinations available")
+if search:
+    data = data[data["destination"].str.contains(search, case=False)]
 
-    else:
-        st.dataframe(data)
+# Budget filter
+budget = st.slider("Max Travel Price",2000,100000,20000)
 
-except Exception as e:
+data = data[data["travel_price"] <= budget]
 
-    st.error("Error loading destinations dataset")
+# Weather filter
+weather = st.selectbox(
+    "Preferred Weather",
+    ["All","Cold","Hot","Moderate","Tropical"]
+)
 
-# Refresh button
-if st.button("Refresh Destinations"):
-    st.rerun()
+if weather != "All":
+    data = data[data["weather"].str.contains(weather)]
+
+st.dataframe(data)
